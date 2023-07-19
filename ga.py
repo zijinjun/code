@@ -3,13 +3,13 @@ import math, random
 
 class Population:
     # design a population
-    def __init__(self, size, chrom_size, cp, mp, gen_max):
+    def __init__(self, func ,size, chrom_size, cp, mp, gen_max):
         # the information about the population
         self.individuals = []  # the set of the individuals
         self.fitness = []  # the set of individuals' fitness 
         self.selector_probability = []  # the set of individuals' selection probability
         self.new_individuals = []  # the set of the individuals in the next generation
-
+        self.func=func # the target function
         self.elitist = {'chromosome': [0, 0], 'fitness': 0, 'age': 0}  # the information about the optimal information
 
         self.size = size  # the number of the individuals
@@ -37,13 +37,14 @@ class Population:
 
     def fitness_func(self, chrom1, chrom2):
         ''' Calclate the fitness of an individual based on its two chromosomes. '''
-        interval = [-10.0, 10.0]
+        interval = [-5.0, 5.0]
         (x, y) = (self.decode(interval, chrom1),
                 self.decode(interval, chrom2))
-        n = lambda x, y: math.sin(math.sqrt(x * x + y * y)) ** 2 - 0.5
-        d = lambda x, y: (1 + 0.001 * (x * x + y * y)) ** 2
-        func = lambda x, y: 0.5 - n(x, y) / d(x, y)
-        return func(x, y)
+        # n = lambda x, y: math.sin(math.sqrt(x * x + y * y)) ** 2 - 0.5
+        # d = lambda x, y: (1 + 0.001 * (x * x + y * y)) ** 2
+        # func = lambda x, y: 0.5 - n(x, y) / d(x, y)
+        # return func(x, y)
+        return self.func(x,y)
 
     def evaluate(self):
         ''' Evaluate fitness of every indiviual in the set "self.individuals". '''
@@ -144,12 +145,10 @@ class Population:
     def run(self):
         '''This loop is designed based on the max generation of the population.
         During the iteration, call function evolve() to perform calculations on the evolution of the population and output the maximum, minimum and average of the fitness of individuals of every generation'''
+        mx = -1e9
+        mn = 1e9
         for i in range(self.generation_max):
             self.evolve()
-            print(i, max(self.fitness), sum(self.fitness) / self.size, min(self.fitness))
-
-
-if __name__ == '__main__':
-    # the number of the individuals in the polulation is 50, the length of the chromosome is 25,the crossover probability is 0.8, the mutation probability is 0.1, the max generations of the population to evolve is 150
-    pop = Population(50, 24, 0.8, 0.1, 150)
-    pop.run()
+            mx = max(mx, max(self.fitness))
+            mn = min(mn, min(self.fitness))
+        print(mx, mn)

@@ -2,19 +2,14 @@ import math
 from random import random
 import matplotlib.pyplot as plt
 import numpy as np
+from genefunc import funcval
 
-
-def func(x, y):  # the function to be optimized
-    n = lambda x, y: math.sin(math.sqrt(x * x + y * y)) ** 2 - 0.5
-    d = lambda x, y: (1 + 0.001 * (x * x + y * y)) ** 2
-    func = lambda x, y: 0.5 - n(x, y) / d(x, y)
-    return func(x, y)
 
 
 # x is the "x1" in the formula, y is the "x2" in the formula
 class SA:
     def __init__(self, func, iter=100, T0=100, Tf=0.01, alpha=0.99):
-        self.func = func
+        self.func = func # the target function
         self.iter = iter  # the iteration times of the inner loop,that is L=100
         self.alpha = alpha  # the cooling down factor，alpha=0.99
         self.T0 = T0  # initial temperature T0=100
@@ -25,7 +20,7 @@ class SA:
         self.most_best = []
         """
         Function random() will take a real number value ranging from 0 to 1.
-        If integer values ranging from 0 to 10 are wanted, we can use (int)random()*11.
+        If integer values in range [0,10] are wanted, we can use (int)random()*11.
         After discarding the demical places of random()*11 ,it will satisfy the needs.
         In this example, the absolute value of x1 and x2 will not exceed 5(including 5 and -5), and the result of (random()*11-5) is an arbitary value in range (-6,6)
         the result of (random()*10-5) is an arbitary value in range (-5,5) which will not be 5 or -5.
@@ -71,7 +66,7 @@ class SA:
                 f = self.func(self.x[i], self.y[i])  # "f" is the current optimal value after several iterations.
                 x_new, y_new = self.generate_new(self.x[i], self.y[i])  # generate new solutions
                 f_new = self.func(x_new, y_new)  # calculate corresponding value of the target function
-                if self.Metrospolis(f, f_new):  # 判断是否接受新值 determine whether thw new solution is accepted
+                if self.Metrospolis(f, f_new):  # determine whether thw new solution is accepted
                     self.x[i] = x_new  # If accepted, save the solutions in the list "x" and "y".
                     self.y[i] = y_new
             # Iterate L times and save the optimal value and solutions at this temperature
@@ -86,7 +81,4 @@ class SA:
         f_best, idx = self.best()
         print(f"F={f_best}, x={self.x[idx]}, y={self.y[idx]}")
 
-
-sa = SA(func)
-sa.run()
 
